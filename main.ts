@@ -74,8 +74,15 @@ for (const name of shots) {
 }
 
 // ---- copy the hand-in ----
-rmSync(outDir, { recursive: true, force: true });
+// Clear the output directory's previous contents without ever removing the
+// directory itself: on the grader /output is a bind-mounted volume, and
+// removing the mount point throws EPERM. So mkdir first, then drop each
+// child entry one by one.
+// Fix 2026-11-19: the old rmSync(outDir) killed the grade run with EPERM on
+// the grader; verified in a local nobody + read-only + mount-point run that
+// this children-only clear exits 0 where the old line failed.
 mkdirSync(outDir, { recursive: true });
+for (const name of readdirSync(outDir)) rmSync(join(outDir, name), { recursive: true, force: true });
 cpSync(gameDir, join(outDir, 'game'), { recursive: true });
 cpSync(shotsDir, join(outDir, 'screenshots'), { recursive: true });
 
