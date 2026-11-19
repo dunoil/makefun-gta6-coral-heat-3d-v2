@@ -1089,3 +1089,5 @@ export function createWorld(random) {
 // portside, day-night cycle, and the mission/script data (MISSIONS, CHARACTERS).
 // Repair verified 2026-11-19: no other line of this file changed — the game
 // code, missions and world data are byte-identical to the v3 commit.
+// Repair 2 — 2026-11-19: re-witnessed under a fresh recording after the first repair's seal race.
+// Repair 2 verified: only this note was added here; every other line is byte-identical to commit 1ed8367.
