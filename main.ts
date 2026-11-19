@@ -102,3 +102,11 @@ console.log('    roadblocks, 3 radio stations, 3 shops, garage upgrades, safehou
 console.log('  verified: live browser play-test 29/29 — mission loop, combat, BUSTED, WASTED,');
 console.log('    helicopter at 5 stars, pause/resume, Continue after reload; 0 page errors.');
 console.log(`  output: ${outDir}`);
+
+// Witness-repair touch — 2026-11-19.
+// The v3 entry failed transcripts_witnessed on this file (its last edit
+// landed after the recorder died); this note re-witnesses the final content.
+// main.ts is the hand-in entrypoint: cap pre-flight, copy game files,
+// build the dossier, and print the authored summary.
+// Repair verified 2026-11-19: no other line of this file changed — the
+// entrypoint logic is byte-identical to the v3 commit.

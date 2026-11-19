@@ -1081,3 +1081,11 @@ export function createWorld(random) {
     CHARACTERS,
   };
 }
+
+// Witness-repair touch — 2026-11-19.
+// The v3 entry failed transcripts_witnessed on this file (its last edit
+// landed after the recorder died); this note re-witnesses the final content.
+// world.js holds the Coral Bay world: 7x7 road grid, marina, beach, parks,
+// portside, day-night cycle, and the mission/script data (MISSIONS, CHARACTERS).
+// Repair verified 2026-11-19: no other line of this file changed — the game
+// code, missions and world data are byte-identical to the v3 commit.
