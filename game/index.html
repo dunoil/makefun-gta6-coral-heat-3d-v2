@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CORAL HEAT 3D — Coral Bay</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #0a0d16; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #eef1f5; }
+  #game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+  #status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .hidden { display: none !important; }
+  #hud { position: fixed; top: 0; left: 0; right: 0; display: flex; gap: 14px; align-items: center; padding: 10px 14px; pointer-events: none; text-shadow: 0 1px 3px #000; font-weight: 600; }
+  #hud .cash { color: #7ee787; font-size: 20px; }
+  #hud .stars { color: #ffd94c; font-size: 20px; letter-spacing: 2px; }
+  #hud .pill { background: rgba(10, 14, 24, 0.65); border-radius: 6px; padding: 4px 10px; }
+  #hud-mission { position: fixed; top: 52px; left: 14px; font-size: 15px; font-weight: 600; text-shadow: 0 1px 3px #000; background: rgba(10, 14, 24, 0.55); border-radius: 6px; padding: 6px 10px; max-width: 60vw; }
+  #hud-message { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); font-size: 16px; font-weight: 600; text-shadow: 0 1px 3px #000; background: rgba(10, 14, 24, 0.6); border-radius: 6px; padding: 6px 14px; }
+  #hud-bust-wrap { position: fixed; top: 96px; left: 14px; width: 220px; height: 10px; background: rgba(10, 14, 24, 0.7); border-radius: 5px; overflow: hidden; visibility: hidden; }
+  #hud-bust { height: 100%; width: 0%; background: #ff5a4d; }
+  #hud-time { position: fixed; top: 52px; right: 14px; font-weight: 700; text-shadow: 0 1px 3px #000; background: rgba(10, 14, 24, 0.55); border-radius: 6px; padding: 6px 10px; }
+  #minimap { position: fixed; right: 14px; bottom: 14px; width: 180px; height: 180px; border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 8px; background: #0d4d6e; }
+  .overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(5, 8, 16, 0.72); z-index: 10; }
+  .panel { background: #141824; border: 1px solid #3a4152; border-radius: 12px; padding: 28px 34px; max-width: 640px; width: min(92vw, 640px); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6); }
+  .menu-title { font-size: 44px; font-weight: 900; letter-spacing: 2px; color: #ff6b4a; text-shadow: 0 0 24px rgba(255, 107, 74, 0.5); }
+  .sub { color: #9aa3b2; margin-top: 6px; font-size: 15px; }
+  .keys { margin-top: 18px; font-size: 13px; line-height: 1.9; color: #c6ccd8; }
+  .keys b { color: #ffd94c; }
+  #dialogue-box { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); width: min(92vw, 720px); background: rgba(16, 20, 32, 0.94); border: 1px solid #3a4152; border-radius: 12px; padding: 16px; display: flex; gap: 16px; z-index: 10; }
+  #dlg-portrait { width: 100px; height: 100px; border-radius: 8px; flex: none; }
+  #dlg-name { font-weight: 800; color: #ffd94c; margin-bottom: 6px; }
+  #dlg-lines { font-size: 16px; line-height: 1.55; }
+  #dlg-prompt { margin-top: 10px; font-size: 13px; color: #9aa3b2; }
+  .shop-list { font-size: 15px; line-height: 2.1; margin-top: 10px; }
+  .shop-list div { border-bottom: 1px solid #262c3a; }
+  h2 { margin: 0 0 4px; font-size: 24px; }
+  .big { font-size: 40px; font-weight: 900; letter-spacing: 2px; }
+  .wasted { color: #ff5a4d; }
+  .busted { color: #4da3ff; }
+  .complete { color: #7ee787; }
+</style>
+</head>
+<body>
+<canvas id="game" aria-label="CORAL HEAT 3D: an open-world crime game in Coral Bay. Drive, take missions, outrun the police."></canvas>
+<p id="status" role="status" aria-live="polite"></p>
+<div id="hud">
+  <span class="cash" id="hud-cash">$120</span>
+  <span class="stars" id="hud-stars">☆☆☆☆☆</span>
+  <span class="pill" id="hud-weapon">Pistol</span>
+  <span class="pill" id="hud-ammo">12 / 12</span>
+  <span class="pill" id="hud-health">HP 100</span>
+  <span class="pill" id="hud-armour">ARM 0</span>
+  <span class="pill" id="hud-speed">0 km/h</span>
+  <span class="pill" id="hud-radio">♪ off</span>
+</div>
+<div id="hud-mission"></div>
+<div id="hud-time">06:43</div>
+<div id="hud-bust-wrap"><div id="hud-bust"></div></div>
+<div id="hud-message"></div>
+<canvas id="minimap" width="180" height="180"></canvas>
+
+<div id="title-screen" class="overlay">
+  <div class="panel">
+    <div id="title-menu"><div class="menu-title">CORAL HEAT 3D</div></div>
+    <div class="keys">
+      <b>WASD / arrows</b> — walk &amp; drive &nbsp;·&nbsp; <b>E</b> — talk / enter car / interact<br>
+      <b>Mouse click / F</b> — shoot &nbsp;·&nbsp; <b>Shift</b> — run / NOS &nbsp;·&nbsp; <b>Space</b> — brake<br>
+      <b>1 / 2 / 3</b> — switch weapon &nbsp;·&nbsp; <b>R</b> — radio &nbsp;·&nbsp; <b>Q</b> — station &nbsp;·&nbsp; <b>J</b> — side job &nbsp;·&nbsp; <b>P</b> — pause<br>
+      8 story missions · taxi, courier &amp; sprint jobs · 3 shops · garage · safehouse save
+    </div>
+  </div>
+</div>
+
+<div id="dialogue-box" class="hidden">
+  <canvas id="dlg-portrait" width="100" height="100"></canvas>
+  <div>
+    <div id="dlg-name"></div>
+    <div id="dlg-lines"></div>
+    <div id="dlg-prompt"></div>
+  </div>
+</div>
+
+<div id="shop-box" class="overlay hidden">
+  <div class="panel">
+    <h2 id="shop-title">Shop</h2>
+    <div class="shop-list" id="shop-list"></div>
+    <div class="sub">Cash: <span id="shop-cash"></span> · E to leave</div>
+  </div>
+</div>
+
+<div id="garage-box" class="overlay hidden">
+  <div class="panel">
+    <h2>Doc's Garage</h2>
+    <div class="shop-list" id="garage-list"></div>
+    <div class="sub">E to leave</div>
+  </div>
+</div>
+
+<div id="paused-box" class="overlay hidden">
+  <div class="panel"><div class="big">PAUSED</div><div class="sub">P or Space to keep playing</div></div>
+</div>
+
+<div id="wasted-box" class="overlay hidden">
+  <div class="panel"><div class="big wasted">WASTED</div><div class="sub">The crew drags you back to the safehouse. Press Space to respawn — $120 fine.</div></div>
+</div>
+
+<div id="busted-box" class="overlay hidden">
+  <div class="panel"><div class="big busted">BUSTED</div><div class="sub">The Coral Bay PD books you and lets you walk. Press Space to respawn — $200 fine.</div></div>
+</div>
+
+<div id="complete-box" class="overlay hidden">
+  <div class="panel"><div class="big complete">CORAL HEAT</div><div class="sub">Story complete — the city is yours.</div><div class="sub" id="complete-stats"></div><div class="sub">Press Space to keep roaming Coral Bay.</div></div>
+</div>
+
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>
