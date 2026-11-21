@@ -1144,3 +1144,4 @@ export function createWorld(random) {
 // code, missions and world data are byte-identical to the v3 commit.
 // Repair 2 — 2026-11-19: re-witnessed under a fresh recording after the first repair's seal race.
 // Repair 2 verified: only this note was added here; every other line is byte-identical to commit 1ed8367.
+// v4 witness — 2026-11-21: re-witnessed under the v4 repair recording; the v4 changes above (Glasshouse, Last Ferry, getaway job, predictive interception, no-U-turn traffic) were authored in the v4 build session.

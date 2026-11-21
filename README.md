@@ -59,3 +59,13 @@ MAKEFUN_OUTPUT_DIR=out node main.ts
 (game text ≤ 160 KB, dossier ≤ 1.5 MiB, 4 screenshots ≤ 256 KB each), builds
 `out/dossier.json` with the kit's `vendor/makefun-game.ts`, and prints a
 summary. Two runs produce byte-identical output.
+
+## v4 update (2026-11-21)
+
+Ten story missions (Glasshouse and Last Ferry join the campaign, and a
+marker-radius fix makes every mission completable end to end), a fourth
+side job (getaway runs that hold 2 stars of heat), predictive-intercept
+police routing, no-U-turn ambient traffic, a fourth radio station
+(NOCTURNE 77), and a headless simulation suite (sim-test.mjs, 12/12)
+covering all missions, all job types, the 5-star response, and seed
+determinism.

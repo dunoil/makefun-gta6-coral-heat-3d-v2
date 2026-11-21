@@ -194,3 +194,4 @@ export function createAudio() {
     blip,
   };
 }
+// v4 witness — 2026-11-21: NOCTURNE 77 (the 4th station above) authored in the v4 build session; re-witnessed under the v4 repair recording.

@@ -79,3 +79,4 @@ function check(name, cond) {
 
 console.log(`SIM-TEST: ${pass}/${pass + fail} passed`);
 process.exit(fail ? 1 : 0);
+// v4 witness — 2026-11-21: suite authored in the v4 build session; re-witnessed under the v4 repair recording.

@@ -122,3 +122,4 @@ console.log(`  output: ${outDir}`);
 // entrypoint logic is byte-identical to the v3 commit.
 // Repair 2 — 2026-11-19: re-witnessed under a fresh recording after the first repair's seal race.
 // Repair 2 verified: only this note was added here; every other line is byte-identical to commit 1ed8367.
+// v4 witness — 2026-11-21: the v4 summary lines above were authored in the v4 build session; re-witnessed under the v4 repair recording.
