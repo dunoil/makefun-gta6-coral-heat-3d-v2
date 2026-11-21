@@ -67,6 +67,18 @@ export const MISSIONS = [
     pickup: { x: -188, z: 52, label: 'Docks' }, drop: { x: 188, z: 52, label: 'Vera at the port' },
   },
   {
+    name: 'Glasshouse', giver: 'vera', pay: 600, combat: 3, heat: 2,
+    brief: ['Vera: My glasshouse crew left a package in the park. Guards are watching it.', 'Vera: Pick it up at the glasshouse park and bring it to my harbour office.', 'Vera: Two stars of attention comes with this one. Keep it clean.'],
+    after: ['Vera: The package is safe, and so is my office. Good work.'],
+    pickup: { x: -104, z: 104, label: 'Glasshouse park' }, drop: { x: 188, z: -52, label: 'Harbour office' },
+  },
+  {
+    name: 'Last Ferry', giver: 'marco', pay: 650, night: true, heat: 3,
+    brief: ['Marco: Last ferry is in. A client is waiting at the marina dock, no questions.', 'Marco: Pick them up after dark and get them to the north car park.', 'Marco: Heat will follow. Lose it or outrun it, just get them there.'],
+    after: ['Marco: Client delivered, ferry gone. The night pays well.'],
+    pickup: { x: 0, z: 188, label: 'Marina dock' }, drop: { x: -52, z: -156, label: 'North car park' },
+  },
+  {
     name: 'Coral Heat', giver: 'solana', pay: 800, combat: 4, finale: true,
     brief: ['Solana: The ledger. It is at the lighthouse, and Rico wants it more.', 'Solana: Get it. Bring it home. This ends tonight.', 'Solana: Whatever happens out there — drive like the city is yours.'],
     after: ['Solana: The ledger is ours. Rico is finished in Coral Bay.', 'Solana: You did it, kid. The city is yours now.'],
@@ -78,6 +90,7 @@ const JOB_SPOTS = [
   { kind: 'taxi', x: 52, z: -156, label: 'Taxi stand' },
   { kind: 'courier', x: -52, z: 156, label: 'Courier office' },
   { kind: 'sprint', x: 0, z: -156, label: 'Sprint start' },
+  { kind: 'getaway', x: 104, z: 156, label: 'Getaway corner' },
 ];
 
 function dist2(ax, az, bx, bz) {
@@ -167,7 +180,7 @@ export function createWorld(random) {
   const CAR_COLORS = ['#d94f3d', '#3e7cb1', '#f2c94c', '#7d8a99', '#27ae60', '#8e44ad', '#e67e22'];
 
   function spawnTraffic() {
-    for (let i = 0; i < 14; i++) {
+    for (let i = 0; i < 18; i++) {
       const a = nodeAt(random.int(0, 6), random.int(0, 6));
       let b = nodeAt(Math.min(6, a.i + 1), a.j);
       if (random.next() < 0.5) b = nodeAt(a.i, Math.min(6, a.j + 1));
@@ -176,7 +189,7 @@ export function createWorld(random) {
   }
 
   function spawnPeds() {
-    for (let i = 0; i < 18; i++) {
+    for (let i = 0; i < 22; i++) {
       const a = nodeAt(random.int(0, 6), random.int(0, 6));
       const b = nodeAt(Math.min(6, a.i + 1), a.j);
       state.peds.push({ x: a.x + random.range(-8, 8), z: a.z + random.range(-8, 8), angle: random.next() * 6.28, speed: random.range(1, 2.2), nodeA: a, nodeB: b, t: random.next(), down: false, timer: 0, shirt: random.pick(['#e74c3c', '#3498db', '#f1c40f', '#2ecc71', '#ecf0f1']) });
@@ -474,7 +487,10 @@ export function createWorld(random) {
 
   function stepCopCars(dt) {
     const p = state.player;
-    const target = nearestNode(p.x, p.z);
+    // Predictive interception: cop cars path to where the player is heading, not where the player is.
+    let tx = p.x, tz = p.z;
+    if (p.inCar && Math.abs(p.speed) > 4) { const lead = 1.2; tx += Math.cos(p.angle) * p.speed * lead; tz += Math.sin(p.angle) * p.speed * lead; }
+    const target = nearestNode(tx, tz);
     for (const c of state.copCars) {
       c.repath -= dt;
       if (c.repath <= 0 || c.path.length === 0) {
@@ -612,7 +628,9 @@ export function createWorld(random) {
           const nj = c.nodeB.j + dj;
           if (ni >= 0 && ni <= 6 && nj >= 0 && nj <= 6) opts.push(nodeAt(ni, nj));
         }
-        c.nodeB = random.pick(opts);
+        const fwd = opts.filter((n) => n !== c.nodeA);
+        const choices = fwd.length > 0 ? fwd : opts;
+        c.nodeB = random.pick(choices);
       }
     }
   }
@@ -642,7 +660,9 @@ export function createWorld(random) {
           const nj = pd.nodeB.j + dj;
           if (ni >= 0 && ni <= 6 && nj >= 0 && nj <= 6) opts.push(nodeAt(ni, nj));
         }
-        pd.nodeB = random.pick(opts);
+        const fwd = opts.filter((n) => n !== pd.nodeA);
+        const choices = fwd.length > 0 ? fwd : opts;
+        pd.nodeB = random.pick(choices);
       }
       // Run over by a car?
       const p = state.player;
@@ -714,6 +734,32 @@ export function createWorld(random) {
         state.job = null;
         say('Sprint failed — out of time.');
       }
+    } else if (job.kind === 'getaway') {
+      job.timer -= dt;
+      if (job.stage === 'drop') {
+        state.heat = Math.max(state.heat, 2);
+        state.wanted = Math.ceil(state.heat);
+        state.crimeTimer = 0;
+      }
+      const target = job.stage === 'pickup' ? job.pickup : job.drop;
+      if (dist2(state.player.x, state.player.z, target.x, target.z) < 36) {
+        if (job.stage === 'pickup') {
+          job.stage = 'drop';
+          say('Client aboard. Lose the heat and reach the marker.');
+        } else {
+          const pay = job.timer > 0 ? job.pay + Math.floor(job.timer) : Math.floor(job.pay / 2);
+          state.player.cash += pay;
+          state.stats.earned += pay;
+          state.stats.jobs++;
+          state.job = null;
+          say(`Getaway complete. +$${pay}`);
+          events |= EVENT_JOB | EVENT_CASH;
+        }
+      }
+      if (job.timer <= 0 && state.job) {
+        state.job = null;
+        say('Getaway blown — the client bailed.');
+      }
     }
     return events;
   }
@@ -741,6 +787,12 @@ export function createWorld(random) {
       }
       state.job = { kind, i: 0, gates, timer: 90, pay: 250 };
       say('Sprint: 5 gates, 90 seconds. Go!');
+    } else if (kind === 'getaway') {
+      const pick = nodeAt(random.int(0, 6), random.int(0, 6));
+      let drop = nodeAt(random.int(0, 6), random.int(0, 6));
+      while (drop === pick) drop = nodeAt(random.int(0, 6), random.int(0, 6));
+      state.job = { kind, stage: 'pickup', pickup: { x: pick.x, z: pick.z }, drop: { x: drop.x, z: drop.z }, timer: 120, pay: 320 };
+      say('Getaway: pick up the client at the marker. Fast and quiet.');
     }
   }
 
@@ -750,6 +802,7 @@ export function createWorld(random) {
     if (job.kind === 'taxi') return job.stage === 'pickup' ? job.pickup : job.drop;
     if (job.kind === 'courier') return job.stops[job.i];
     if (job.kind === 'sprint') return job.gates[job.i];
+    if (job.kind === 'getaway') return job.stage === 'pickup' ? job.pickup : job.drop;
     return null;
   }
 
@@ -866,7 +919,7 @@ export function createWorld(random) {
       // Delivering works from the car too: drive into the marker and press E.
       const deliverTarget = missionTarget();
       const nearDeliver = m && state.missionStage === 'deliver' && deliverTarget
-        && dist2(p.x, p.z, deliverTarget.x, deliverTarget.z) < 64;
+        && dist2(p.x, p.z, deliverTarget.x, deliverTarget.z) < 4096;
       if (nearDeliver) {
         if (state.enemies.length === 0) {
           events |= completeMission();
@@ -876,7 +929,7 @@ export function createWorld(random) {
       } else if (!p.inCar) {
         // Mission pickup.
         const target = missionTarget();
-        if (m && target && dist2(p.x, p.z, target.x, target.z) < 64) {
+        if (m && target && dist2(p.x, p.z, target.x, target.z) < 4096) {
           if (state.missionStage === 'pickup') {
             state.missionStage = 'deliver';
             if (m.car) {

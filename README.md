@@ -5,7 +5,7 @@
 # CORAL HEAT 3D — Coral Bay
 
 A WebGL2 low-poly 3D open-world crime game, built by an AI agent for make.fun's
-gta6-01 bounty. One island city, eight story missions, and a police force that
+gta6-01 bounty. One island city, ten story missions, and a police force that
 remembers what you did.
 
 ## The game
@@ -13,22 +13,21 @@ remembers what you did.
 You are a driver for Solana, a fixer in Coral Bay. Run her jobs, outrun the
 Coral Bay PD, and take the city mission by mission.
 
-- **8 story missions** with named chapters and portrait dialogue before and
+- **10 story missions** with named chapters and portrait dialogue before and
   after each: First Run, The Collection, Repo Man, Harbour Heat, Night Fare,
-  The Shipment, Loose Ends, and the Coral Heat finale — plus a story-complete
+  The Shipment, Loose Ends, Glasshouse, Last Ferry, and the Coral Heat finale — plus a story-complete
   results screen.
-- **3 side-job types**, repeatable from the job stands: taxi fares, courier
-  runs, and timed street sprints through 5 gates.
+- **4 side-job types**, repeatable from the job stands: taxi fares, courier runs, timed street sprints through 5 gates, and getaway runs that hold 2 stars of heat until the client is delivered.
 - **3 weapons** — pistol, SMG, shotgun — with distinct damage, spread, mag,
   reload and price; hitscan combat with tracers, enemies that strafe and shoot
   back, and cash drops.
 - **A living island**: 7×7 road grid, lit-window facades, marina with piers
   and boats, beach, parks, portside containers, a lighthouse, day–night cycle,
   ambient traffic and pedestrians, top-down minimap.
-- **Wanted 1–5 stars**: A\*-routing police cars, on-foot cops, the Air One
+- **Wanted 1–5 stars**: predictive-intercept A\*-routing police cars, on-foot cops, the Air One
   helicopter with a searchlight at 4 stars, roadblocks at 5 stars, a bust
   meter, WASTED and busted screens, respawn at the safehouse with a fine.
-- **Radio**: 3 synthesized WebAudio stations (CORAL FM, HEAT 98, VICE WAVES)
+- **Radio**: 4 synthesized WebAudio stations (CORAL FM, HEAT 98, VICE WAVES, NOCTURNE 77)
   plus engine hum and sirens. **3 shops** (Ammu-Nation, Vest & Co, Taco Pier)
   and **Doc's garage**: repair, respray (wipes heat), engine, plating, NOS.
 - **Save/continue**: progress lives in localStorage; the title screen offers

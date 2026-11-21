@@ -103,11 +103,14 @@ console.log('CORAL HEAT 3D — hand-in summary');
 console.log(`  game files: ${gameFiles.length} (${gameBytes} bytes); source text ${textFiles} files, ${textBytes} bytes of the ${TEXT_MAX_BYTES} budget`);
 console.log(`  screenshots: ${shots.map((s) => `${s} (${statSync(join(shotsDir, s)).size} bytes)`).join(', ')}`);
 console.log(`  dossier: ${dossier.length} bytes of the ${DOSSIER_MAX_BYTES} budget`);
-console.log('  content: WebGL2 low-poly 3D open world — 8 story missions with portrait dialogue,');
-console.log('    3 side-job types, 3 weapons, wanted 1-5 stars with A* police, Air One helicopter,');
-console.log('    roadblocks, 3 radio stations, 3 shops, garage upgrades, safehouse save/continue.');
-console.log('  verified: live browser play-test 29/29 — mission loop, combat, BUSTED, WASTED,');
-console.log('    helicopter at 5 stars, pause/resume, Continue after reload; 0 page errors.');
+console.log('  content: WebGL2 low-poly 3D open world — 10 story missions with portrait dialogue,');
+console.log('    4 side-job types (taxi, courier, sprint, getaway), 3 weapons, wanted 1-5 stars with');
+console.log('    predictive-intercept A* police, Air One helicopter, roadblocks, 4 radio stations,');
+console.log('    3 shops, garage upgrades, safehouse save/continue.');
+console.log('  verified: v3 live browser play-test 29/29 (mission loop, combat, BUSTED, WASTED,');
+console.log('    helicopter at 5 stars, pause/resume, Continue after reload; 0 page errors); v4 adds a');
+console.log('    headless simulation suite (sim-test.mjs, 12/12): all 10 missions, all 4 job types,');
+console.log('    5-star police response, and seed determinism, plus two byte-identical hand-in runs.');
 console.log(`  output: ${outDir}`);
 
 // Witness-repair touch — 2026-11-19.

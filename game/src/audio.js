@@ -1,4 +1,4 @@
-// Sound only: three synthesized WebAudio radio stations, engine hum, sirens, gunshots.
+// Sound only: four synthesized WebAudio radio stations, engine hum, sirens, gunshots.
 // No audio files — every note is an oscillator, so the game loads nothing over the network.
 export function createAudio() {
   let ctx = null;
@@ -18,6 +18,7 @@ export function createAudio() {
     { name: 'CORAL FM', wave: 'triangle', bpm: 96, notes: [220, 261.6, 329.6, 392], bass: [110, 110, 130.8, 98] },
     { name: 'HEAT 98', wave: 'sawtooth', bpm: 128, notes: [196, 233.1, 293.7, 311.1], bass: [98, 98, 116.5, 87.3] },
     { name: 'VICE WAVES', wave: 'square', bpm: 112, notes: [246.9, 293.7, 369.9, 415.3], bass: [123.5, 123.5, 146.8, 110] },
+    { name: 'NOCTURNE 77', wave: 'sine', bpm: 84, notes: [174.6, 220, 261.6, 349.2], bass: [87.3, 87.3, 110, 65.4] },
   ];
 
   function ensure() {
